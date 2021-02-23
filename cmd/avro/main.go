@@ -108,7 +108,20 @@ func readRow(row interface{}, schema *Schema) ([]string, error) {
 			continue
 		}
 
-		val := rawVal.(map[string]interface{})
+		if str, ok := rawVal.(string); ok {
+			values[i] = str
+			continue
+		} else if num, ok := rawVal.(int64); ok {
+			values[i] = strconv.FormatInt(num, 10)
+			continue
+		}
+
+		val, ok := rawVal.(map[string]interface{})
+		if !ok {
+			values[i] = "READ_ERROR"
+			continue
+		}
+
 		switch typ {
 		case TYPE_STRING:
 			values[i] = val["string"].(string)
